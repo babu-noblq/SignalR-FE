@@ -1,0 +1,37 @@
+<form [formGroup]="chatForm" (ngSubmit)="sendBroadcastMessage()">
+  <label>User ID:</label>
+  <input formControlName="userId" placeholder="User ID" /><br /><br />
+
+  <label>Group Name:</label>
+  <input formControlName="groupName" placeholder="Group Name" /><br /><br />
+
+  <label>Message:</label>
+  <input formControlName="message" placeholder="Type your message here" /><br /><br />
+
+  <!-- Buttons to send to different targets -->
+  <button type="button" (click)="sendMessageToUser()">Send to User</button>
+  <button type="button" (click)="sendMessageToGroup()">Send to Group</button>
+  <button type="button" (click)="sendBroadcastMessage()">Broadcast to All</button>
+  <button type="button" (click)="getConnection()">Get ConnectionId</button>
+  <button type="button" (click)="addUserToGroup()">Add Group</button>
+  <button type="button" (click)="removeUserFromGroup()">Remove Group</button>
+  <button type="button" (click)="viewAllGroups()">view all group</button>
+</form>
+
+<!-- Display Broadcast Messages -->
+<h3>Broadcast Messages:</h3>
+<div *ngFor="let msg of broadcastMessages">
+  <strong>Broadcast:</strong> {{ msg.message }}
+</div>
+
+<!-- Display Group Messages -->
+<h3>Group Messages:</h3>
+<div *ngFor="let msg of groupMessages">
+  <strong>Group {{ msg.group }}:</strong> {{ msg.message }}
+</div>
+
+<!-- Display User Messages -->
+<h3>User Messages:</h3>
+<div *ngFor="let msg of messages">
+  <strong>{{ msg.user }}:</strong> {{ msg.message }}
+</div>
