@@ -1,39 +1,77 @@
-<form [formGroup]="chatForm" (ngSubmit)="sendBroadcastMessage()" class="chat-form">
-  <label class="form-label">User ID:</label>
-  <input formControlName="userId" placeholder="User ID" class="form-input" /><br /><br />
+<div *ngIf="isLoggedIn">
+  <form
+    [formGroup]="chatForm"
+    (ngSubmit)="sendBroadcastMessage()"
+    class="chat-form"
+  >
+    <label class="form-label">User ID:</label>
+    <input
+      formControlName="userId"
+      placeholder="User ID"
+      class="form-input"
+    /><br /><br />
 
-  <label class="form-label">Group Name:</label>
-  <input formControlName="groupName" placeholder="Group Name" class="form-input" /><br /><br />
+    <label class="form-label">Group Name:</label>
+    <input
+      formControlName="groupName"
+      placeholder="Group Name"
+      class="form-input"
+    /><br /><br />
 
-  <label class="form-label">Message:</label>
-  <input formControlName="message" placeholder="Type your message here" class="form-input" /><br /><br />
+    <label class="form-label">Message:</label>
+    <input
+      formControlName="message"
+      placeholder="Type your message here"
+      class="form-input"
+    /><br /><br />
 
-  <!-- Buttons to send to different targets -->
-  <div class="button-group">
-    <button type="button" (click)="sendMessageToUser()" class="form-button">Send to User</button>
-    <button type="button" (click)="sendMessageToGroup()" class="form-button">Send to Group</button>
-    <button type="button" (click)="sendBroadcastMessage()" class="form-button">Broadcast to All</button>
-    <button type="button" (click)="getConnection()" class="form-button">Get ConnectionId</button>
-    <button type="button" (click)="addUserToGroup()" class="form-button">Add Group</button>
-    <button type="button" (click)="removeUserFromGroup()" class="form-button">Remove Group</button>
-    <button type="button" (click)="viewAllGroups()" class="form-button">View All Groups</button>
+    <!-- Buttons to send to different targets -->
+    <div class="button-group">
+      <button type="button" (click)="sendMessageToUser()" class="form-button">
+        Send to User
+      </button>
+      <button type="button" (click)="sendMessageToGroup()" class="form-button">
+        Send to Group
+      </button>
+      <button
+        type="button"
+        (click)="sendBroadcastMessage()"
+        class="form-button"
+      >
+        Broadcast to All
+      </button>
+      <button type="button" (click)="getConnection()" class="form-button">
+        Get ConnectionId
+      </button>
+      <button type="button" (click)="addUserToGroup()" class="form-button">
+        Add Group
+      </button>
+      <button type="button" (click)="removeUserFromGroup()" class="form-button">
+        Remove Group
+      </button>
+      <button type="button" (click)="viewAllGroups()" class="form-button">
+        View All Groups
+      </button>
+    </div>
+  </form>
+
+  <!-- Display Broadcast Messages -->
+  <h3>Broadcast Messages:</h3>
+  <div *ngFor="let msg of broadcastMessages" class="message-container">
+    <strong>Broadcast:</strong> {{ msg.message }}
   </div>
-</form>
 
-<!-- Display Broadcast Messages -->
-<h3>Broadcast Messages:</h3>
-<div *ngFor="let msg of broadcastMessages" class="message-container">
-  <strong>Broadcast:</strong> {{ msg.message }}
+  <!-- Display Group Messages -->
+  <h3>Group Messages:</h3>
+  <div *ngFor="let msg of groupMessages" class="message-container">
+    <strong>Group {{ msg.group }}:</strong> {{ msg.message }}
+  </div>
+
+  <!-- Display User Messages -->
+  <h3>User Messages:</h3>
+  <div *ngFor="let msg of messages" class="message-container">
+    <strong>{{ msg.user }}:</strong> {{ msg.message }}
+  </div>
 </div>
 
-<!-- Display Group Messages -->
-<h3>Group Messages:</h3>
-<div *ngFor="let msg of groupMessages" class="message-container">
-  <strong>Group {{ msg.group }}:</strong> {{ msg.message }}
-</div>
-
-<!-- Display User Messages -->
-<h3>User Messages:</h3>
-<div *ngFor="let msg of messages" class="message-container">
-  <strong>{{ msg.user }}:</strong> {{ msg.message }}
-</div>
+<app-login *ngIf="!isLoggedIn" (login)="loginUser()"></app-login>
