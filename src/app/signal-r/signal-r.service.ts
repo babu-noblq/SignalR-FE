@@ -28,13 +28,16 @@ export class ChatService {
 
   private createConnection() {
     
-    const userId = "abc123";
+    const userId = localStorage.getItem("userId") as string;
 
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`http://localhost:5039/chatHub?userId=${userId}`,{
-        headers: {"userName": "Babu"},
+      .withUrl(`http://localhost:5258/broadcasthub?userId=${userId}`,{
+        headers: {
+          "userName": userId,
+          "tenant-id": "bef2d565-d167-472d-b8f9-893884667622"
+        },
         accessTokenFactory : () => {
-          return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWlEIjoiMTIzNDU2Nzg5MCIsIm5hbWUiOiJKb2huIFBhdHJpY2siLCJpYXQiOjE1MTYyMzkwMjJ9.-LdooHzi6tU0Wi7i4eIKHw8TvMMXUe9aOIdp5oqcS4g"
+          return localStorage.getItem("authToken") ?? "";
         },
         transport:signalR.HttpTransportType.WebSockets,     
       }).withAutomaticReconnect()
@@ -59,27 +62,29 @@ export class ChatService {
   }
 
   private addReceiveMessageListeners() {
+    const userId = localStorage.getItem("userId") as string;
+
     // Listener for messages to specific users
     this.hubConnection.on('ReceiveMessageForUser', (user: string, message: string) => {
-      console.log("single-user -->" ,user, "single-user -message -->", message)
+      this.acknowledgeToServer(`${user} received messsage`)
       this.userMessagesSubject.next({ user, message });
     });
 
     // Listener for messages to groups
     this.hubConnection.on('ReceiveMessageForGroup', (data:{group: string, message: string}) => {
-      console.log("gropu-name -->" ,data.group, "group-message -->", data.message)
+      this.acknowledgeToServer(`${userId} received message from group`)
       this.groupMessagesSubject.next({group: data.group, message: data.message});
     });
 
     // Listener for broadcast messages
     this.hubConnection.on('ReceiveMessage', (message: string) => {
-      console.log( "All-user-message -->", message)
+      this.acknowledgeToServer(`${userId} receive BroadCast message`)
       this.broadcastMessagesSubject.next({ message });
     });
 
     this.hubConnection.on('AddedToGroup', (data:{group: string, message: string})  => {
       console.log( "Group added -->", data.group)
-      this.groupMessagesSubject.next({group: data.group, message: data.message});
+      // this.groupMessagesSubject.next({group: data.group, message: data.message});
     });
 
     this.hubConnection.on('RemovedFromGroup', (data:{group: string, message: string})  => {
@@ -104,9 +109,13 @@ export class ChatService {
       } else {
         console.log("Active Users and Connections:", userList);
         userList.forEach((user:any) => {
-          console.log(`User ID: ${user.userId}, Connection ID: ${user.connectionId}`);
+          console.log(`User ID: ${user?.userId}, Connection ID: ${user?.connectionId}`);
         });
       }
+    });
+
+    this.hubConnection.on('BroadcastToAll', (message: any) => {
+      console.log("broadcast-message", message)
     });
   }
 
@@ -151,6 +160,11 @@ export class ChatService {
 
   public viewAllConnections() {
     this.hubConnection.invoke('ViewAllUserConnections')
+      .catch(err => console.error(err));
+  }
+
+  public acknowledgeToServer(message: string) {
+    this.hubConnection.invoke('AcknowledgeFromClient', message)
       .catch(err => console.error(err));
   }
 }

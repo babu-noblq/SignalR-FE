@@ -1,0 +1,32 @@
+<main>
+  <div class="container">
+    <div class="pic2"></div>
+
+    <img src="https://madhusudhanv.carrd.co/assets/images/image09.jpg?v=7c9db475" alt="Imaginative" />
+    <form *ngIf="isLoginView" [formGroup]="profileForm" (ngSubmit)="handleLogin()">
+      <h1>Log in To Continue</h1>
+      <div class="inp">
+        <input type="text" formControlName="username" name="username" />
+        <label [ngClass]="class" for="username">Username</label>
+      </div>
+      <div class="text-danger" *ngIf="profileForm.controls['username'].invalid && (isFormsubmitted || profileForm.controls['username'].touched || profileForm.controls['username'].dirty)">
+        <span *ngIf="profileForm.controls['username'].hasError('required')">Please fill out this field.</span>
+      </div>
+
+      <br />
+      <div class="inp">
+        <input type="password" formControlName="password" name="password" />
+        <label [ngClass]="class" for="password">Password</label>
+      </div>
+
+      <div class="text-danger" *ngIf="profileForm.controls['password'].invalid && (isFormsubmitted || profileForm.controls['password'].touched || profileForm.controls['password'].dirty)">
+        <span *ngIf="profileForm.controls['password'].hasError('required')">Please fill out this field.</span>
+        <span *ngIf="profileForm.controls['password'].hasError('minlength')">Password Must Contain Atleast 8 Characters</span>
+      </div>
+
+      <br />
+      <button type="submit" [disabled]="!profileForm.valid">Login</button><br />
+      <a (click)="isLoginView = false" style="color: azure;">Don't have an account? Sign up</a>
+    </form>
+  </div>
+</main>
